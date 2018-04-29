@@ -143,6 +143,7 @@ var Board = function (element, width, height) {
     BoardMethods.selectTile = function(row, column){
 
         var tileTeam = this.grid[row][column].units[0].team;
+        BoardMethods.pollServerForChanges();
 
         // First click of an occupied tile
         if(!tileSelected && tileTeam != 'unoccupied') {
@@ -165,13 +166,12 @@ var Board = function (element, width, height) {
             //BATTLE
             if($($($('#board').find('.line')[row]).find('.column')[column]).hasClass(enemyTeam)) {
                 BoardMethods.battle(row, column);
+            } else {
+                // Send off POST with results
+                BoardMethods.sendResult(row, column, currentTeam);
             }
 
             BoardMethods.grid[$(originTile).attr('row')][$(originTile).attr('col')] = { units: [{team: 'unoccupied'}], weather: false };
-
-            // Send off POST with results
-            BoardMethods.sendResult(row, column);
-            
 
             if(currentTeam =='team1') {
                 currentTeam = 'team2';
@@ -200,7 +200,7 @@ var Board = function (element, width, height) {
     }
 
     // send data to update global grid
-    BoardMethods.sendResult = function(row, column){
+    BoardMethods.sendResult = function(row, column, newTeam){
             // origin tile
             var originX = $(originTile).attr('row');
             var originY = $(originTile).attr('col');
@@ -209,10 +209,10 @@ var Board = function (element, width, height) {
             var destinationY = $($($('#board').find('.line')[row]).find('.column')[column]).attr('col');
             console.log('sending result for ' + originX + ',' + originY);
 
-            $.post('http://tilesuniverse:3000/', {tiles:[
+            $.post('http://tilesuniverse:3000/', {tiles:JSON.stringify([
                 {x:originX,y:originY,data:{units:[{team: 'unoccupied'}]}, weather: false},
-                {x:destinationX,y:destinationY,data:{units:[{team: 'unoccupied'}]}, weather: false}
-             ]})
+                {x:destinationX,y:destinationY,data:{units:[{team: newTeam}]}, weather: false}
+             ])})
                 .done(function( data ) {
                 console.log(data );
               });
@@ -298,6 +298,7 @@ var Board = function (element, width, height) {
         BoardMethods.updateTileToWinner(row, column, winner);
 
         BoardMethods.grid[row][column] = { units: [{team: winner}], weather: weatherAffected };
+        BoardMethods.sendResult(row, column, winner);
     }
 
     // Changes the class on the tile to display the correct colour
@@ -366,11 +367,12 @@ var Board = function (element, width, height) {
     BoardMethods.pollServerForChanges = function() {
         $.get('http://tilesuniverse:3000/', function(result){
            console.log(result);
-           /* 
-           if(success) {
+           
+           if(result) {
+            
                BoardMethods.updateGridFromServer(x, y, team, weather) 
            }
-            */
+            
        });
     }
     
