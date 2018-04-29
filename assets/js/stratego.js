@@ -25,7 +25,10 @@ var Board = function (element, width, height) {
     var originTile;
 
     var currentTeam = 'team1';
-    var enemyTeam = 'team2'
+    var enemyTeam = 'team2';
+
+
+    BoardMethods.heartBeat;
 
 
     /**
@@ -120,7 +123,7 @@ var Board = function (element, width, height) {
                $.ajax({
                    method: "POST",
                    url: 'http://tilesuniverse:3000/',
-                   data: {tiles: JSON.stringify(result)}
+                   data: {tiles: JSON.stringify(result), field: 'units'}
                })
                .done(function( result2 ) {
                    // console.log( result2 );
@@ -138,6 +141,13 @@ var Board = function (element, width, height) {
     BoardMethods.start = function(){
         BoardMethods.updateGrid();
         $('#whoseTurn').addClass(currentTeam)
+        clearInterval(BoardMethods.heartBeat);
+       BoardMethods.heartBeat = setInterval(function(){
+            if(flag) {
+               BoardMethods.pollServerForChanges();
+            }
+           
+       }, 7000);
     };
 
     /**
@@ -181,11 +191,14 @@ var Board = function (element, width, height) {
             originTile = $($('#board').find('.line')[row]).find('.column')[column];
             BoardMethods.showSelectedTile(row, column);
             tileSelected = true;
+            flag = true;
             BoardMethods.getValidMoveTiles(row, column, tileTeam);
         }
 
         // Second click of a valid tile
         if(tileSelected && $($($('#board').find('.line')[row]).find('.column')[column]).hasClass('possibleMoveTiles')) {
+            
+            flag = false;
             tileSelected = false;
             
             BoardMethods.grid[row][column] = { units: [{team: currentTeam}], weather: false };
@@ -212,6 +225,7 @@ var Board = function (element, width, height) {
                 enemyTeam = 'team2';
             }
 
+        
             $('#whoseTurn').attr('class','').addClass(currentTeam);
             $('.possibleMoveTiles').removeClass('possibleMoveTiles');
 
@@ -246,9 +260,19 @@ var Board = function (element, width, height) {
              ]),
             field: 'units'
         })
-            .done(function( data ) {
-            // console.log(data );
+            .done(function(data) {
+console.log(data);
+        
           });
+
+            // $.ajax({
+            //        method: "POST",
+            //        url: 'http://tilesuniverse:3000/',
+            //        data: {tiles: JSON.stringify(result), field: 'units'}
+            //    })
+            //    .done(function( result2 ) {
+            //        // console.log( result2 );
+            //    });
             // can delete the .done once verified.
    }
 
@@ -392,7 +416,9 @@ var Board = function (element, width, height) {
         $.get('http://tilesuniverse:3000/', function(result){
            
             if(result && tileSelected) {
+                console.log('test');
                 result.forEach(function(tile){
+
                     BoardMethods.updateGridFromServer(tile.x, tile.y, tile.units[0].team, tile.weather) 
                 })
            }
