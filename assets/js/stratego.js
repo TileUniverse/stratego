@@ -1,42 +1,11 @@
 /*
-grid
-tile
-teams
-game piece
-fighting
-moving
-
-grid {
-    rows
-    columns
-}
 tile {
-    occupied
-    game piece
     weather
 }
+
 game piece {
-    team
-    strength
-    is flag
-    is bomb
-    is dead
-    is affected by Game of Life
+    is affected by weather
 }
-fighting {
-    game piece 1
-    game piece 2
-    winner
-}
-moving {
-    game piece
-    target tile
-    is able to move to target tile
-
-}
-
-
-
 
 request {
     start tile
@@ -44,6 +13,7 @@ request {
 
 }
 */
+
 /**
  * Board Object
  *
@@ -132,11 +102,7 @@ var Board = function (element, width, height) {
     }
 
     /**
-     * build Abstract Grid
-     * 
-     @ @todo the original state of the cell will be random
-     * @param integer width
-     * @param integer height
+     * build grids
      */
     (function(){
 
@@ -177,18 +143,22 @@ var Board = function (element, width, height) {
         // Second click of a valid tile
         if(tileSelected && $($($('#board').find('.line')[row]).find('.column')[column]).hasClass('possibleMoveTiles')) {
             tileSelected = false;
+            
+            BoardMethods.grid[row][column] = { units: [{team: currentTeam}] };
+            
+            $($($('#board').find('.line')[row]).find('.column')[column]).addClass(currentTeam).removeClass('unoccupied');
+            
+            $(originTile).removeClass('team1').removeClass('team2').addClass('unoccupied').removeAttr('id');
 
             //BATTLE
             if($($($('#board').find('.line')[row]).find('.column')[column]).hasClass(enemyTeam)) {
                 BoardMethods.battle(row, column);
             }
 
-            $($($('#board').find('.line')[row]).find('.column')[column])
-            .addClass(currentTeam).removeClass('unoccupied').removeClass('unoccupied');
-            $(originTile).removeClass('team1').removeClass('team2').addClass('unoccupied').removeAttr('id');
+            BoardMethods.grid[$(originTile).attr('row')][$(originTile).attr('column')] = { units: [{team: 'unoccupied'}] };
 
-            // BoardMethods.grid[$(originTile).attr('row')][$(originTile).attr('column')] = { units: [{team: 'unoccupied'}] };
-            BoardMethods.grid[row][column] = { units: [{team: currentTeam}] };
+            
+            
 
             if(currentTeam =='team1') {
                 currentTeam = 'team2';
@@ -271,6 +241,7 @@ var Board = function (element, width, height) {
         return validMoveTiles;
     };
 
+    // Battle
     BoardMethods.battle = function(row, column){
         var team1Strength = Math.floor(Math.random()*10);
         var team2Strength = Math.floor(Math.random()*10);
@@ -281,10 +252,12 @@ var Board = function (element, width, height) {
         var message = (winner == 'team1') ? "Team 1 wins" : "Team 2 wins";
         BoardMethods.showBattleOutcome(team1Strength, team2Strength, message);
         BoardMethods.updateTileToWinner(row, column, winner);
+        console.log(winner);
 
         BoardMethods.grid[row][column] = { units: [{team: winner}] };
     }
 
+    // Changes the class on the tile to display the correct colour
     BoardMethods.updateTileToWinner = function(row, column, winner){
         console.log(winner);
         var current_board,
