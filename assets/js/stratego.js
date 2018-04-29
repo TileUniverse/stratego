@@ -170,13 +170,14 @@ var Board = function (element, width, height) {
         // Second click of a valid tile
         if(tileSelected && $($($('#board').find('.line')[row]).find('.column')[column]).hasClass('possibleMoveTiles')) {
             tileSelected = false;
-            $($($('#board').find('.line')[row]).find('.column')[column]).addClass(currentTeam);
-            $(originTile).removeClass('team1').addClass('unoccupied');
+            $($($('#board').find('.line')[row]).find('.column')[column]).addClass(currentTeam).removeClass('unoccupied');
+            $(originTile).removeClass('team1').removeClass('team2').addClass('unoccupied');
             if(currentTeam =='team1') {
                 currentTeam = 'team2';
             } else if (currentTeam == 'team2') {
                 currentTeam = 'team1';
             }
+            $('#whoseTurn').attr('class','').addClass(currentTeam)
 
         }        
     };
@@ -306,8 +307,8 @@ var Board = function (element, width, height) {
      * @return void
      */
     BoardMethods.start = function(){
-
         BoardMethods.updateGrid();
+        $('#whoseTurn').addClass(currentTeam)
     };
 
     /**
