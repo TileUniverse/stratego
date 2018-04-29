@@ -84,3 +84,8 @@ a{
 .possibleMoveTiles {
 	border-color: lightgreen !important;
 }
+
+.weather{
+	border: 1px solid white;
+	opacity: 0.4;
+}
