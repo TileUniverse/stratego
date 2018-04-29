@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<link rel="stylesheet" type="text/css" href="assets/css/default.css" />
+
+	<title>Stratego</title>
+
+</head>
+<body>
+
+	<div id="controls">
+		<div class="center">
+			<div class="controls-cols">
+				<a class="control start" onclick="board.start();">Start!</a><br/>
+			</div>
+			<div class="cleaner">&nbsp;</div>
+		</div>
+	</div>
+
+	<div>
+		<center>
+			<div id="board"></div>
+		</center>
+	</div>
+
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="assets/js/stratego.js"></script>
+
+	<script type="text/javascript">
+		var height 	= 10,
+			width	= 10,
+			element = $('#board'),
+			selection;
+
+		var board = new Board(element, width, height);
+
+		var flag = true;
+
+		$(document).ready(function(){
+
+			$('.column').on('click',function(){
+				var that = this;
+				$(that).toggleClass('live');
+
+				// update abstract grid
+				var position = $('.column').index(that);
+
+				var place = String(position / width).split('.');
+				if(place.length < 2){
+					place[1] = "0";
+				}
+				var x = position.toString().substr(0,1);
+				var y = position.toString().substr(1,1);
+
+				board.selectTile(x, y);
+
+				board.updateGrid();
+			});
+
+		});
+	</script>
+
+</body>
+</html>
