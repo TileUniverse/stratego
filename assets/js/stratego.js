@@ -67,7 +67,8 @@ var Board = function (element, width, height) {
 
     var tileSelected = false;
 
-    BoardMethods.heartBeat;
+    var currentTeam = 'team1';
+
 
     /**
      * Create the abstract grids
@@ -160,11 +161,19 @@ var Board = function (element, width, height) {
         if(!tileSelected && tileTeam != 'unoccupied') {
             BoardMethods.showSelectedTile(row, column);
             tileSelected = true;
-            BoardMethods.showAvailableMoves(row, column, tileTeam);
+            BoardMethods.getValidMoveTiles(row, column, tileTeam);
         }
 
-        if(tileSelected) {
-            
+        if(tileSelected && $($($('#board').find('.line')[row]).find('.column')[column]).hasClass('possibleMoveTiles')) {
+            tileSelected = false;
+            $($($('#board').find('.line')[row]).find('.column')[column]).addClass(currentTeam);
+
+            if(currentTeam =='team1') {
+                currentTeam = 'team2';
+            } else if (currentTeam == 'team2') {
+                currentTeam = 'team1';
+            }
+
         }        
     };
 
@@ -180,26 +189,7 @@ var Board = function (element, width, height) {
         $(current_column).attr('id','selectedTile');
     }
 
-    BoardMethods.showAvailableMoves = function(row, column, tileTeam){
-
-        var tiles = BoardMethods.getValidMoveTiles(row, column, tileTeam);
-        // var tiles = BoardMethods.getValidMoveTiles(row, column);
-
-        // tiles.forEach(function(element) {
-        //     console.log(element);
-        // });
-
-
-        // var current_board,
-        //    current_row,
-        //    current_column;
-        
-        // current_board = $('#board');
-        // current_row = current_board.find('.line')[row];
-        // current_column = $(current_row).find('.column')[column];
-
-        // $(current_column).attr('id','selectedTile');
-    }
+   
 
     /**
      * Return an Array of tiles which are valid moves
@@ -221,9 +211,7 @@ var Board = function (element, width, height) {
             && typeof this.grid[row-1][column] !== "undefined" 
             && tileTeam != this.grid[row-1][column].units[0].team
         ){
-            var tile = $($('#board').find('.line')[row-1]).find('.column')[column];
-        console.log(tile);
-            $(tile).addClass('possibleMoveTiles');
+            $($($('#board').find('.line')[row-1]).find('.column')[column]).addClass('possibleMoveTiles');
             validMoveTiles.push(this.grid[row-1][column]);
         }
 
@@ -233,9 +221,7 @@ var Board = function (element, width, height) {
             && typeof this.grid[row+1][column] !== "undefined" 
             && tileTeam != this.grid[row+1][column].units[0].team
         ){
-            var tile = $($('#board').find('.line')[row+1]).find('.column')[column];
-        console.log(tile);
-            $(tile).addClass('possibleMoveTiles');
+            $($($('#board').find('.line')[row+1]).find('.column')[column]).addClass('possibleMoveTiles');
             validMoveTiles.push(this.grid[row+1][column]);
         }
         
@@ -243,9 +229,7 @@ var Board = function (element, width, height) {
         if(typeof this.grid[row][column-1] !== "undefined" 
             && tileTeam != this.grid[row][column-1].units[0].team
         ){
-            var tile = $($('#board').find('.line')[row]).find('.column')[column-1];
-        console.log(tile);
-            $(tile).addClass('possibleMoveTiles');
+            $($($('#board').find('.line')[row]).find('.column')[column-1]).addClass('possibleMoveTiles');
             validMoveTiles.push(this.grid[row][column-1]);
         }
         
@@ -253,9 +237,7 @@ var Board = function (element, width, height) {
         if(typeof this.grid[row][column+1] !== "undefined"
             && tileTeam != this.grid[row][column+1].units[0].team
         ){
-            var tile = $($('#board').find('.line')[row]).find('.column')[column+1];
-        console.log(tile);
-            $(tile).addClass('possibleMoveTiles');
+            $($($('#board').find('.line')[row]).find('.column')[column+1]).addClass('possibleMoveTiles');
             validMoveTiles.push(this.grid[row][column+1]);
         }
 
