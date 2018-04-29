@@ -227,20 +227,10 @@ var Board = function (element, width, height) {
             // }).done(function() {
             //     console.log(data);
             // });
-
-            // Body of POST request
-            // {tiles:[{x:1,y:2,data:someData},{x:0,y:0,data:someData},{x:3,y:3,data:someData}]}
-             // {tiles:[{x:originX,y:originY,data:{units:[{team: 'unoccupied'}]}, weather: false},
-             // {x:destinationX,y:destinationY,data:someData}]}
-
    }
 
     /**
      * Return an Array of tiles which are valid moves
-     * 
-     * @param integer line
-     * @param integer column
-     * @return Array neighbours
      */
     BoardMethods.getValidMoveTiles = function(row, column, tileTeam){
 
@@ -325,6 +315,7 @@ var Board = function (element, width, height) {
 
     // Checks if a given cell has weather
     BoardMethods.hasWeather = function(row, column){
+        console.log(this.grid[row][column]);
         return this.grid[row][column].weather;
     }
 
@@ -337,7 +328,6 @@ var Board = function (element, width, height) {
         
         outcomeText = player1messgae + player2messagae + weatherMessage + victoryMessage;
         
-
         $('#battleOutcome').html(outcomeText);
     }
 
@@ -350,11 +340,6 @@ var Board = function (element, width, height) {
 
     /**
      * Change the tile in the DOM to reflect it's status
-     *
-     * @param String action (live|die)
-     * @param int line
-     * @param int column
-     * @return void
      */
     BoardMethods.copyTileStatusToDOM = function( line, column ){
         // get the state of a tile
