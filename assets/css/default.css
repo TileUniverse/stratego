@@ -80,3 +80,6 @@ a{
 #selectedTile {
 	border-color: yellow !important;
 }
+.possibleMoveTiles {
+	border-color: lightgreen !important;
+}

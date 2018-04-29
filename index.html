@@ -45,7 +45,6 @@
 
 			$('.column').on('click',function(){
 				var that = this;
-				$(that).toggleClass('live');
 
 				// update abstract grid
 				var position = $('.column').index(that);
@@ -59,7 +58,6 @@
 
 				board.selectTile(x, y);
 
-				board.updateGrid();
 			});
 
 		});

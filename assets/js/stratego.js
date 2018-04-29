@@ -78,7 +78,6 @@ var Board = function (element, width, height) {
             BoardMethods.grid2.push([]);
 
             for(var j = 0; j < height; j++){
-                Tile.id = uniqid();
                 BoardMethods.grid[i].push(Tile);
                 BoardMethods.grid2[i].push(Tile);
             }
@@ -97,6 +96,8 @@ var Board = function (element, width, height) {
             BoardMethods.grid[index].forEach(function(element2, index2){
                 var newElement2 = document.createElement("div");
                 newElement2.classList.add('column');
+                newElement2.setAttribute('row', index);
+                newElement2.setAttribute('col', index2);
                 $(newElement).append(newElement2);
             });
 
@@ -181,11 +182,12 @@ var Board = function (element, width, height) {
 
     BoardMethods.showAvailableMoves = function(row, column, tileTeam){
 
-        var tiles = BoardMethods.getValidMoveTiles(row, column);
+        var tiles = BoardMethods.getValidMoveTiles(row, column, tileTeam);
+        // var tiles = BoardMethods.getValidMoveTiles(row, column);
 
-        tiles.forEach(function(element) {
-            console.log(element);
-        });
+        // tiles.forEach(function(element) {
+        //     console.log(element);
+        // });
 
 
         // var current_board,
@@ -206,7 +208,7 @@ var Board = function (element, width, height) {
      * @param integer column
      * @return Array neighbours
      */
-    BoardMethods.getValidMoveTiles = function(row, column){
+    BoardMethods.getValidMoveTiles = function(row, column, tileTeam){
 
         var validMoveTiles = [];
 
@@ -215,27 +217,45 @@ var Board = function (element, width, height) {
         
         // Up
         if(
-            typeof this.grid[row+1] !== "undefined" 
-            && typeof this.grid[row+1][column] !== "undefined" 
+            typeof this.grid[row-1] !== "undefined"
+            && typeof this.grid[row-1][column] !== "undefined" 
+            && tileTeam != this.grid[row-1][column].units[0].team
         ){
-            validMoveTiles.push(this.grid[row+1][column]);
+            var tile = $($('#board').find('.line')[row-1]).find('.column')[column];
+        console.log(tile);
+            $(tile).addClass('possibleMoveTiles');
+            validMoveTiles.push(this.grid[row-1][column]);
         }
 
         // Down
         if(
-            typeof this.grid[row-1] !== "undefined"
-            && typeof this.grid[row-1][column] !== "undefined" 
+            typeof this.grid[row+1] !== "undefined" 
+            && typeof this.grid[row+1][column] !== "undefined" 
+            && tileTeam != this.grid[row+1][column].units[0].team
         ){
-            validMoveTiles.push(this.grid[row-1][column]);
+            var tile = $($('#board').find('.line')[row+1]).find('.column')[column];
+        console.log(tile);
+            $(tile).addClass('possibleMoveTiles');
+            validMoveTiles.push(this.grid[row+1][column]);
         }
         
         // Left
-        if(typeof this.grid[row][column-1] !== "undefined" ){
+        if(typeof this.grid[row][column-1] !== "undefined" 
+            && tileTeam != this.grid[row][column-1].units[0].team
+        ){
+            var tile = $($('#board').find('.line')[row]).find('.column')[column-1];
+        console.log(tile);
+            $(tile).addClass('possibleMoveTiles');
             validMoveTiles.push(this.grid[row][column-1]);
         }
         
         // Right
-        if(typeof this.grid[row][column+1] !== "undefined" ){
+        if(typeof this.grid[row][column+1] !== "undefined"
+            && tileTeam != this.grid[row][column+1].units[0].team
+        ){
+            var tile = $($('#board').find('.line')[row]).find('.column')[column+1];
+        console.log(tile);
+            $(tile).addClass('possibleMoveTiles');
             validMoveTiles.push(this.grid[row][column+1]);
         }
 
