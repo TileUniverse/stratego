@@ -69,6 +69,7 @@ var Board = function (element, width, height) {
     var originTile;
 
     var currentTeam = 'team1';
+    var enemyTeam = 'team2'
 
 
     /**
@@ -115,6 +116,12 @@ var Board = function (element, width, height) {
             BoardMethods.grid[1][i] = Tile2;
             BoardMethods.grid[2][i] = Tile2;
         }
+        for (var i = width - 1; i >= 0; i--) {
+            BoardMethods.grid[3][i] = Tile;
+            BoardMethods.grid[4][i] = Tile;
+            BoardMethods.grid[5][i] = Tile;
+            BoardMethods.grid[6][i] = Tile;
+        }
         var Tile3 = jQuery.extend({}, Tile);
         Tile3.units = [{team: "team2"}];
         for (var i = width - 1; i >= 0; i--) {
@@ -157,7 +164,7 @@ var Board = function (element, width, height) {
 
     BoardMethods.selectTile = function(row, column){
 
-        var tileTeam = this.grid[row][column].units[0].team
+        var tileTeam = this.grid[row][column].units[0].team;
 
         // First click of an occupied tile
         if(!tileSelected && tileTeam != 'unoccupied') {
@@ -170,14 +177,29 @@ var Board = function (element, width, height) {
         // Second click of a valid tile
         if(tileSelected && $($($('#board').find('.line')[row]).find('.column')[column]).hasClass('possibleMoveTiles')) {
             tileSelected = false;
-            $($($('#board').find('.line')[row]).find('.column')[column]).addClass(currentTeam).removeClass('unoccupied');
-            $(originTile).removeClass('team1').removeClass('team2').addClass('unoccupied');
+
+            //BATTLE
+            if($($($('#board').find('.line')[row]).find('.column')[column]).hasClass(enemyTeam)) {
+                BoardMethods.battle(row, column);
+            }
+
+            $($($('#board').find('.line')[row]).find('.column')[column])
+            .addClass(currentTeam).removeClass('unoccupied').removeClass('unoccupied');
+            $(originTile).removeClass('team1').removeClass('team2').addClass('unoccupied').removeAttr('id');
+
+            // BoardMethods.grid[$(originTile).attr('row')][$(originTile).attr('column')] = { units: [{team: 'unoccupied'}] };
+            BoardMethods.grid[row][column] = { units: [{team: currentTeam}] };
+
             if(currentTeam =='team1') {
                 currentTeam = 'team2';
+                enemyTeam = 'team1';
             } else if (currentTeam == 'team2') {
                 currentTeam = 'team1';
+                enemyTeam = 'team2';
             }
-            $('#whoseTurn').attr('class','').addClass(currentTeam)
+
+            $('#whoseTurn').attr('class','').addClass(currentTeam);
+            $('.possibleMoveTiles').removeClass('possibleMoveTiles');
 
         }        
     };
@@ -249,11 +271,56 @@ var Board = function (element, width, height) {
         return validMoveTiles;
     };
 
+    BoardMethods.battle = function(row, column){
+        var team1Strength = Math.floor(Math.random()*10);
+        var team2Strength = Math.floor(Math.random()*10);
+        if(team1Strength == team2Strength) {
+            BoardMethods.battle();
+        }
+        var winner = (team1Strength > team2Strength) ? 'team1' : 'team2'; 
+        var message = (winner == 'team1') ? "Team 1 wins" : "Team 2 wins";
+        BoardMethods.showBattleOutcome(team1Strength, team2Strength, message);
+        BoardMethods.updateTileToWinner(row, column, winner);
+
+        BoardMethods.grid[row][column] = { units: [{team: winner}] };
+    }
+
+    BoardMethods.updateTileToWinner = function(row, column, winner){
+        console.log(winner);
+        var current_board,
+           current_row,
+           current_column;
+        
+        current_board = $('#board');
+        current_row = current_board.find('.line')[row];
+        current_column = $(current_row).find('.column')[column];
+        console.log(current_column);
+
+
+        $(current_column).removeClass('team1').removeClass('team2').addClass(winner);
+                console.log(current_column);
+
+    }
+
+    BoardMethods.hasWeather = function(row, column){
+        //returns true if weather is affecting the tile
+    }
+
+    BoardMethods.showBattleOutcome = function(team1Strength, team2Strength, message){
+        
+        outcomeText = '<p>Team 1 score: ' + team1Strength + 
+        '<br>Team 2 score: ' + team2Strength + 
+        '<br>' + message + '!</p>';
+        
+
+        $('#battleOutcome').html(outcomeText);
+    }
+
     /**
      * Return the status of the specific cell
      */
-    BoardMethods.getTileStatus = function(line, column){
-        return this.grid[line][column].units[0].team;
+    BoardMethods.getTileStatus = function(row, column){
+        return this.grid[row][column].units[0].team;
     };
 
     /**

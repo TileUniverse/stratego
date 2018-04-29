@@ -6,12 +6,6 @@ body, *{
 	margin: 0px;
 }
 
-#whoseTurn{
-	width: 100px;
-	height: 100px;
-	border: 1px solid #000;
-}
-
 .cleaner{
 	clear: both;
 }
@@ -63,13 +57,27 @@ a{
 
 #board .line .column{
 	border: 1px solid #000;
-	width: 20px;
-	height: 20px;
+	width: 40px;
+	height: 40px;
 	float: left;
 }
 
 .live{
 	background-color: #000;
+}
+
+#battleOutcome {
+	width: 20%;
+	height: 200px;
+	background-color: #e8e7e7;
+	margin-left: 100px;
+	position: fixed;
+}
+
+#whoseTurn{
+	width: 100px;
+	height: 100px;
+	border: 1px solid #000;
 }
 
 /* ################################ TILES ################################ */
