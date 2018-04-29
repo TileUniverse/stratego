@@ -155,9 +155,10 @@ var Board = function (element, width, height) {
                 BoardMethods.battle(row, column);
             }
 
-            BoardMethods.grid[$(originTile).attr('row')][$(originTile).attr('column')] = { units: [{team: 'unoccupied'}] };
+            BoardMethods.grid[$(originTile).attr('row')][$(originTile).attr('col')] = { units: [{team: 'unoccupied'}] };
 
-            
+            // Send off POST with results
+            BoardMethods.sendResult(row, column);
             
 
             if(currentTeam =='team1') {
@@ -186,7 +187,21 @@ var Board = function (element, width, height) {
         $(current_column).attr('id','selectedTile');
     }
 
-   
+    // send data to update global grid
+   BoardMethods.sendResult = function(row, column){
+            // origin tile
+            var originX = $(originTile).attr('row');
+            var originY = $(originTile).attr('col');
+            console.log(originX);
+            console.log(originY);
+            // target tile 
+            var destinationX = $($($('#board').find('.line')[row]).find('.column')[column]).attr('row');
+            var destinationY = $($($('#board').find('.line')[row]).find('.column')[column]).attr('col');
+            console.log(destinationX);
+            console.log(destinationY);
+
+            // need to send as ?x=#&y=#&data=
+   }
 
     /**
      * Return an Array of tiles which are valid moves
@@ -252,14 +267,12 @@ var Board = function (element, width, height) {
         var message = (winner == 'team1') ? "Team 1 wins" : "Team 2 wins";
         BoardMethods.showBattleOutcome(team1Strength, team2Strength, message);
         BoardMethods.updateTileToWinner(row, column, winner);
-        console.log(winner);
 
         BoardMethods.grid[row][column] = { units: [{team: winner}] };
     }
 
     // Changes the class on the tile to display the correct colour
     BoardMethods.updateTileToWinner = function(row, column, winner){
-        console.log(winner);
         var current_board,
            current_row,
            current_column;
@@ -267,12 +280,8 @@ var Board = function (element, width, height) {
         current_board = $('#board');
         current_row = current_board.find('.line')[row];
         current_column = $(current_row).find('.column')[column];
-        console.log(current_column);
-
 
         $(current_column).removeClass('team1').removeClass('team2').addClass(winner);
-                console.log(current_column);
-
     }
 
     BoardMethods.hasWeather = function(row, column){
