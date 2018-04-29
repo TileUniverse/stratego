@@ -66,6 +66,7 @@ var Board = function (element, width, height) {
     };
 
     var tileSelected = false;
+    var originTile;
 
     var currentTeam = 'team1';
 
@@ -158,16 +159,19 @@ var Board = function (element, width, height) {
 
         var tileTeam = this.grid[row][column].units[0].team
 
+        // First click of an occupied tile
         if(!tileSelected && tileTeam != 'unoccupied') {
+            originTile = $($('#board').find('.line')[row]).find('.column')[column];
             BoardMethods.showSelectedTile(row, column);
             tileSelected = true;
             BoardMethods.getValidMoveTiles(row, column, tileTeam);
         }
 
+        // Second click of a valid tile
         if(tileSelected && $($($('#board').find('.line')[row]).find('.column')[column]).hasClass('possibleMoveTiles')) {
             tileSelected = false;
             $($($('#board').find('.line')[row]).find('.column')[column]).addClass(currentTeam);
-
+            $(originTile).removeClass('team1').addClass('unoccupied');
             if(currentTeam =='team1') {
                 currentTeam = 'team2';
             } else if (currentTeam == 'team2') {

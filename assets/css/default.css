@@ -6,6 +6,12 @@ body, *{
 	margin: 0px;
 }
 
+#whoseTurn{
+	width: 100px;
+	height: 100px;
+	border: 1px solid #000;
+}
+
 .cleaner{
 	clear: both;
 }
